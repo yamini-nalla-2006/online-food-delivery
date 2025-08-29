@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>How Food Delivery Apps Work — Interactive Diagram</title>
+  <style>
+    :root{
+      --bg:#0f1724; --card:#0b1220; --muted:#9aa6bf; --accent:#ff6b35; --glass: rgba(255,255,255,0.03);
+      --radius:14px; font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial;
+    }
+    html,body{height:100%;}
+    body{margin:0;background:linear-gradient(180deg,#071024 0%, #08162a 100%);color:#e6eef8;display:flex;align-items:center;justify-content:center;padding:28px}
+    .frame{width:1100px;max-width:100%;border-radius:18px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));box-shadow: 0 10px 30px rgba(2,6,23,0.7);padding:24px;display:grid;grid-template-columns:430px 1fr;gap:20px}
+    .left{padding:16px}
+    h1{font-size:20px;margin:0 0 8px}
+    p.lead{color:var(--muted);margin:0 0 16px;font-size:13px}
+
+    .card{background:var(--card);border-radius:12px;padding:14px;margin-bottom:14px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.02)}
+    .diagram{background:linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));border-radius:12px;padding:14px}
+
+    .entity{display:flex;align-items:center;gap:12px;padding:10px;border-radius:10px;background:var(--glass);margin-bottom:10px}
+    .dot{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(135deg,#07263a,#0b3f5d);font-weight:700}
+    .small{font-size:13px;color:var(--muted)}
+
+    .flow{display:flex;flex-direction:column;gap:10px}
+    .step{display:flex;align-items:flex-start;gap:12px}
+    .step .num{min-width:28px;height:28px;border-radius:8px;background:rgba(255,255,255,0.04);display:grid;place-items:center}
+    .step p{margin:0;font-size:13px}
+
+    .right{padding:10px;display:flex;flex-direction:column;gap:12px}
+    .svg-wrap{background:#071226;border-radius:12px;padding:14px}
+    svg{width:100%;height:420px}
+
+    .controls{display:flex;gap:8px;flex-wrap:wrap}
+    .btn{background:transparent;border:1px solid rgba(255,255,255,0.04);padding:8px 10px;border-radius:10px;color:var(--muted);cursor:pointer}
+    .btn.active{border-color:var(--accent);color:var(--accent);box-shadow:0 6px 18px rgba(255,107,53,0.08)}
+
+    .panel{background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));border-radius:12px;padding:12px;color:var(--muted);font-size:13px}
+    .code{background:#04111b;padding:10px;border-radius:8px;color:#bfe8ff;font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', monospace;font-size:12px}
+
+    footer{color:var(--muted);font-size:12px;margin-top:8px}
+
+    @media (max-width:980px){
+      .frame{grid-template-columns:1fr}
+      svg{height:320px}
+    }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <div class="left">
+      <h1>How Food Delivery Apps Work — Overview</h1>
+      <p class="lead">Interactive single-file explanation of the main software pieces and the end-to-end flow: customer app → restaurant → delivery partner → backend services (order management, payments, mapping, notifications).</p>
+
+      <div class="card">
+        <div class="entity"><div class="dot">U</div><div>
+          <div><strong>Customer App</strong></div>
+          <div class="small">Place orders, payments, track delivery</div>
+        </div></div>
+        <div class="entity"><div class="dot">R</div><div>
+          <div><strong>Restaurant Panel</strong></div>
+          <div class="small">Accept orders, update preparation status</div>
+        </div></div>
+        <div class="entity"><div class="dot">D</div><div>
+          <div><strong>Delivery Partner App</strong></div>
+          <div class="small">Receive pickup, navigation & delivery tasks</div>
+        </div></div>
+      </div>
+
+      <div class="card">
+        <h3 style="margin:0 0 8px">Core Backend Services</h3>
+        <div class="small">The cloud services that coordinate everything:</div>
+        <ul class="small" style="margin:10px 0 0;padding-left:18px;line-height:1.6">
+          <li><strong>API Gateway / Order Service</strong> — handles order placement, status transitions.</li>
+          <li><strong>Payment Service</strong> — handles transactions & refunds, integrates gateways.</li>
+          <li><strong>Matching & Routing</strong> — finds the best delivery partner (proximity, ETA, load).</li>
+          <li><strong>Maps & Navigation</strong> — routing, ETA, traffic; usually a 3rd-party API.</li>
+          <li><strong>Realtime Messaging</strong> — push notifications, WebSockets / MQTT for live tracking.</li>
+          <li><strong>Analytics & Monitoring</strong> — dashboards, KPIs, error-tracking.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3 style="margin:0 0 8px">Quick sequence (short)</h3>
+        <div class="flow">
+          <div class="step"><div class="num">1</div><p>User places order (selects items & pays)</p></div>
+          <div class="step"><div class="num">2</div><p>Order created in Order Service; restaurant notified</p></div>
+          <div class="step"><div class="num">3</div><p>Restaurant accepts & prepares; status updates sent</p></div>
+          <div class="step"><div class="num">4</div><p>Matching service assigns delivery partner</p></div>
+          <div class="step"><div class="num">5</div><p>Driver picks up, follows route; user tracks in real-time</p></div>
+        </div>
+      </div>
+      <footer>Tip: click the buttons on the right to highlight each flow step inside the diagram.</footer>
+    </div>
+
+    <div class="right">
+      <div class="svg-wrap">
+        <!-- Simple architecture & sequence visualization using SVG for clarity. Interactivity toggles highlight. -->
+        <svg viewBox="0 0 900 420" xmlns="http://www.w3.org/2000/svg" id="svg">
+          <!-- Background grid -->
+          <defs>
+            <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="6" result="coloredBlur"/>
+              <feMerge>
+                <feMergeNode in="coloredBlur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+          </defs>
+
+          <!-- Entities -->
+          <rect x="20" y="20" rx="12" ry="12" width="220" height="80" fill="#052233" stroke="#073b52"/>
+          <text x="130" y="50" fill="#cfeeff" font-size="14" text-anchor="middle" font-weight="700">Customer App</text>
+          <text x="130" y="70" fill="#9fbfd6" font-size="11" text-anchor="middle">Place order • Track • Pay</text>
+
+          <rect x="340" y="20" rx="12" ry="12" width="220" height="80" fill="#052233" stroke="#073b52"/>
+          <text x="450" y="50" fill="#cfeeff" font-size="14" text-anchor="middle" font-weight="700">Order Service / API</text>
+          <text x="450" y="70" fill="#9fbfd6" font-size="11" text-anchor="middle">Accepts orders • Emits events</text>
+
+          <rect x="660" y="20" rx="12" ry="12" width="220" height="80" fill="#052233" stroke="#073b52"/>
+          <text x="770" y="50" fill="#cfeeff" font-size="14" text-anchor="middle" font-weight="700">Restaurant Panel</text>
+          <text x="770" y="70" fill="#9fbfd6" font-size="11" text-anchor="middle">Confirm & update status</text>
+
+          <!-- Delivery & Matching -->
+          <rect x="150" y="160" rx="12" ry="12" width="220" height="80" fill="#052233" stroke="#073b52"/>
+          <text x="260" y="190" fill="#cfeeff" font-size="14" text-anchor="middle" font-weight="700">Matching Service</text>
+          <text x="260" y="210" fill="#9fbfd6" font-size="11" text-anchor="middle">Assign nearest courier</text>
+
+          <rect x="480" y="160" rx="12" ry="12" width="220" height="80" fill="#052233" stroke="#073b52"/>
+          <text x="590" y="190" fill="#cfeeff" font-size="14" text-anchor="middle" font-weight="700">Delivery App</text>
+          <text x="590" y="210" fill="#9fbfd6" font-size="11" text-anchor="middle">Pickup • Deliver • Update</text>
+
+          <!-- Payment & Maps -->
+          <rect x="340" y="300" rx="12" ry="12" width="220" height="80" fill="#052233" stroke="#073b52"/>
+          <text x="450" y="330" fill="#cfeeff" font-size="14" text-anchor="middle" font-weight="700">Payment Service</text>
+          <text x="450" y="350" fill="#9fbfd6" font-size="11" text-anchor="middle">Charge card • refunds</text>
+
+          <!-- Arrows / flows (grouped so we can highlight via JS) -->
+          <g id="flow1" opacity="0.9">
+            <path d="M240 60 L340 60" stroke="#7fd2ff" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+          </g>
+          <g id="flow2" opacity="0.6">
+            <path d="M560 60 L660 60" stroke="#ffd27f" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+          </g>
+          <g id="flow3" opacity="0.6">
+            <path d="M450 100 L260 160" stroke="#b0ff9d" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+          </g>
+          <g id="flow4" opacity="0.6">
+            <path d="M370 200 L480 200" stroke="#ff8fa3" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+          </g>
+          <g id="flow5" opacity="0.6">
+            <path d="M590 240 L450 300" stroke="#d6b3ff" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+          </g>
+
+          <defs>
+            <marker id="arrow" markerWidth="8" markerHeight="8" refX="5" refY="4" orient="auto">
+              <path d="M0 0 L8 4 L0 8 z" fill="#9fbfd6"/>
+            </marker>
+          </defs>
+
+          <!-- labels for flows -->
+          <text x="290" y="45" font-size="11" fill="#9fbfd6">1. Place order (API)</text>
+          <text x="520" y="45" font-size="11" fill="#9fbfd6">2. Notify Restaurant</text>
+          <text x="360" y="180" font-size="11" fill="#9fbfd6">3. Matching</text>
+          <text x="530" y="220" font-size="11" fill="#9fbfd6">4. Assign & Dispatch</text>
+          <text x="520" y="320" font-size="11" fill="#9fbfd6">5. Payment flow</text>
+
+          <!-- subtle glow group for active highlighting -->
+          <g id="glowGroup"></g>
+        </svg>
+      </div>
+
+      <div class="panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+          <div style="font-weight:700">Interactive Steps</div>
+          <div class="controls" id="controls">
+            <button class="btn active" data-step="all">Show All</button>
+            <button class="btn" data-step="1">1. Place Order</button>
+            <button class="btn" data-step="2">2. Restaurant</button>
+            <button class="btn" data-step="3">3. Matching</button>
+            <button class="btn" data-step="4">4. Driver Pickup</button>
+            <button class="btn" data-step="5">5. Payment</button>
+          </div>
+        </div>
+
+        <div id="explain" style="margin-top:12px" class="small">
+          Click the buttons to highlight the corresponding flow in the diagram. The explanation below shows what each service typically does in a real system.
+        </div>
+
+        <div style="margin-top:12px" class="code" id="codeBox">
+// Example simplified API call sequence (pseudo-JSON)
+POST /api/orders
+{
+  "userId": "u_123",
+  "items": [{"id":"i1","qty":2}],
+  "address": "12 Main St",
+  "paymentMethod": "card_visa"
+}
+        </div>
+
+      </div>
+
+      <div class="panel">
+        <strong>Architecture notes</strong>
+        <ul class="small" style="margin:8px 0 0;padding-left:18px;line-height:1.6">
+          <li>Use idempotent APIs for order creation to avoid duplicate orders.</li>
+          <li>Emit events (OrderCreated, OrderAccepted, DriverAssigned) via message bus for async processing.</li>
+          <li>Store order state in a durable database and use caches for read-heavy endpoints.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Simple interactive highlighting: toggles opacity of flow paths
+    const controls = document.getElementById('controls');
+    const steps = {
+      all: ['flow1','flow2','flow3','flow4','flow5'],
+      1: ['flow1'],
+      2: ['flow2'],
+      3: ['flow3'],
+      4: ['flow4'],
+      5: ['flow5']
+    };
+
+    function setActive(stepKey){
+      // button active states
+      Array.from(controls.querySelectorAll('.btn')).forEach(b=>b.classList.toggle('active', b.dataset.step==stepKey));
+      // hide all
+      ['flow1','flow2','flow3','flow4','flow5'].forEach(id=>{
+        const g = document.getElementById(id);
+        if(!g) return;
+        g.style.opacity = '0.15';
+      });
+      // highlight chosen
+      const toShow = steps[stepKey] || steps['all'];
+      toShow.forEach(id=>{ const g=document.getElementById(id); if(g) g.style.opacity='1'; });
+
+      // update explanation text & code example
+      const explain = document.getElementById('explain');
+      const code = document.getElementById('codeBox');
+      switch(stepKey){
+        case '1': explain.innerHTML = '<strong>Place Order:</strong> Customer app calls Order API. Validate cart, calculate totals, reserve inventory, and create order record.'; code.innerText = 'POST /api/orders\n{\n  userId: "u_123", items:[...], address: {...}\n}'; break;
+        case '2': explain.innerHTML = '<strong>Restaurant:</strong> Restaurant panel receives the order. They accept or reject; update prepare / ready times.'; code.innerText = '// Webhook or socket to restaurant:\nEVENT OrderCreated -> restaurant panel'; break;
+        case '3': explain.innerHTML = '<strong>Matching:</strong> Matching service finds available couriers using location and ETA scoring; then assigns a job.'; code.innerText = '// Matching pseudo:\nfindNearestCourier(order.location, radius=3km)'; break;
+        case '4': explain.innerHTML = '<strong>Driver Pickup:</strong> Driver app receives pickup; navigation (maps API) provides route with ETA; driver updates statuses.'; code.innerText = '// Driver lifecycle:\nASSIGN -> PICKUP -> DELIVERED'; break;
+        case '5': explain.innerHTML = '<strong>Payment:</strong> Only capture or confirm payment once order is accepted (or do pre-authorization). Handle webhooks from payment gateway.'; code.innerText = '// Payment flow:\ncharge(paymentToken) -> onSuccess emit PaymentDone'; break;
+        default: explain.innerHTML = 'Click the buttons to highlight flows in the diagram. The diagram maps to typical services: Order API, Matching, Delivery App, Payments, Restaurant panel.'; code.innerText = '// Example simplified API call sequence (pseudo-JSON)\nPOST /api/orders\n{\n  "userId": "u_123",\n  "items": [{"id":"i1","qty":2}],\n  "address": "12 Main St",\n  "paymentMethod": "card_visa"\n}';
+      }
+    }
+
+    controls.addEventListener('click', (e)=>{
+      const b = e.target.closest('button'); if(!b) return; setActive(b.dataset.step);
+    });
+
+    // init
+    setActive('all');
+  </script>
+</body>
+</html>
